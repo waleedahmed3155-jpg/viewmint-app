@@ -1,134 +1,123 @@
 import 'package:flutter/material.dart';
-import 'package:video_player/video_player.dart';
 
-void main() => runApp(ViewMintApp());
+void main() {
+  runApp(ViewMintApp());
+}
 
-class ViewMintApp extends StatelessWidget {
+class ViewMintApp extends StatefulWidget {
+  @override
+  _ViewMintAppState createState() => _ViewMintAppState();
+}
+
+class _ViewMintAppState extends State<ViewMintApp> {
+  int coins = 1250;
+  int selectedIndex = 0;
+  bool liked = false;
+
+  void addCoins() {
+    setState(() {
+      if (!liked) {
+        coins += 10;
+        liked = true;
+      }
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('10 Coins mil gaye! Total: $coins')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.black),
-      home: HomeScreen(),
-    );
-  }
-}
-
-class HomeScreen extends StatefulWidget {
-  @override
-  _HomeScreenState createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-  int coins = 1250;
-  int selectedIndex = 0;
-
-  final List<String> videos = [
-    'https://flutter.github.io/assets-for-api-docs/assets/videos/butterfly.mp4',
-    'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Stack(
-        children: [
-          PageView.builder(
-            scrollDirection: Axis.vertical,
-            itemCount: videos.length,
-            itemBuilder: (context, index) {
-              return VideoCard(url: videos[index], onCoin: () {
-                setState(() => coins += 10);
-              });
-            },
-          ),
-          SafeArea(
-            child: Padding(
-              padding: EdgeInsets.all(12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('ViewMint', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.white)),
-                  Container(
-                    padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(20)),
-                    child: Row(children: [
-                      Icon(Icons.monetization_on, color: Colors.black, size: 18),
-                      SizedBox(width: 4),
-                      Text('$coins', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-                    ]),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
+      home: Scaffold(
         backgroundColor: Colors.black,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
-        currentIndex: selectedIndex,
-        onTap: (i) => setState(() => selectedIndex = i),
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet), label: 'Balance'),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-        ],
+        appBar: AppBar(
+          backgroundColor: Colors.black,
+          title: Text('ViewMint', style: TextStyle(color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold)),
+          actions: [
+            Container(
+              padding: EdgeInsets.symmetric(horizontal: 14, vertical: 6),
+              margin: EdgeInsets.only(right: 12),
+              decoration: BoxDecoration(color: Colors.amber, borderRadius: BorderRadius.circular(20)),
+              child: Row(children: [
+                Icon(Icons.attach_money, color: Colors.black),
+                Text('$coins', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+              ]),
+            ),
+          ],
+        ),
+        body: selectedIndex == 0 ? homePage() : selectedIndex == 1 ? balancePage() : profilePage(),
+        bottomNavigationBar: BottomNavigationBar(
+          backgroundColor: Colors.black,
+          selectedItemColor: Colors.white,
+          unselectedItemColor: Colors.grey,
+          currentIndex: selectedIndex,
+          onTap: (i) {
+            setState(() {
+              selectedIndex = i;
+              liked = false;
+            });
+          },
+          items: [
+            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+            BottomNavigationBarItem(icon: Icon(Icons.account_balance_wallet), label: 'Balance'),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+          ],
+        ),
       ),
     );
   }
-}
 
-class VideoCard extends StatefulWidget {
-  final String url;
-  final VoidCallback onCoin;
-  VideoCard({required this.url, required this.onCoin});
-  @override
-  _VideoCardState createState() => _VideoCardState();
-}
-
-class _VideoCardState extends State<VideoCard> {
-  late VideoPlayerController _controller;
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.url))
-      ..initialize().then((_) {
-        setState(() {});
-        _controller.play();
-        _controller.setLooping(true);
-      });
-  }
-  @override
-  void dispose() { _controller.dispose(); super.dispose(); }
-  @override
-  Widget build(BuildContext context) {
+  Widget homePage() {
     return Stack(
-      fit: StackFit.expand,
       children: [
-        _controller.value.isInitialized
-            ? FittedBox(fit: BoxFit.cover, child: SizedBox(width: _controller.value.size.width, height: _controller.value.size.height, child: VideoPlayer(_controller)))
-            : Center(child: CircularProgressIndicator(color: Colors.white)),
+        Container(color: Colors.grey[900], child: Center(child: Icon(Icons.play_circle_fill, size: 100, color: Colors.white))),
         Positioned(
-          right: 12, bottom: 100,
+          right: 16, bottom: 100,
           child: Column(children: [
-            IconButton(icon: Icon(Icons.favorite, color: Colors.red, size: 32), onPressed: widget.onCoin),
+            IconButton(icon: Icon(Icons.favorite, color: liked ? Colors.red : Colors.white, size: 40), onPressed: addCoins),
             Text('+10', style: TextStyle(color: Colors.white)),
-            SizedBox(height: 16),
-            Icon(Icons.comment, color: Colors.white, size: 32),
-            SizedBox(height: 16),
-            Icon(Icons.share, color: Colors.white, size: 32),
+            SizedBox(height: 20),
+            Icon(Icons.comment, color: Colors.white, size: 35),
+            SizedBox(height: 20),
+            Icon(Icons.share, color: Colors.white, size: 35),
           ]),
         ),
         Positioned(
-          left: 12, bottom: 20,
+          left: 16, bottom: 30,
           child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Text('@viewmint_user', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-            Text('Video dekho, Coins jeeto', style: TextStyle(color: Colors.white)),
+            Text('@viewmint_user', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
+            Text('Video dekho, Coins jeeto', style: TextStyle(color: Colors.white, fontSize: 16)),
+            SizedBox(height: 10),
+            Text(liked ? 'Liked! +10 Coins' : 'Dil dabao, Coins jeeto', style: TextStyle(color: Colors.yellow)),
           ]),
         ),
       ],
+    );
+  }
+
+  Widget balancePage() {
+    return Center(
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        Icon(Icons.account_balance_wallet, size: 80, color: Colors.amber),
+        SizedBox(height: 20),
+        Text('Total Coins', style: TextStyle(color: Colors.white, fontSize: 20)),
+        Text('$coins', style: TextStyle(color: Colors.amber, fontSize: 50, fontWeight: FontWeight.bold)),
+        SizedBox(height: 20),
+        ElevatedButton(onPressed: () {}, child: Text('Withdraw')),
+      ]),
+    );
+  }
+
+  Widget profilePage() {
+    return Center(
+      child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+        CircleAvatar(radius: 50, child: Icon(Icons.person, size: 50)),
+        SizedBox(height: 15),
+        Text('@viewmint_user', style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold)),
+        Text('Coins: $coins', style: TextStyle(color: Colors.white, fontSize: 18)),
+      ]),
     );
   }
 }
