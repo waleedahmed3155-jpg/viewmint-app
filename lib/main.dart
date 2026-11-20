@@ -8,8 +8,8 @@ class ViewMintApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark(),
-      home: MainScreen(),
-    );
+      home: LoginPage(), 
+    ); 
   }
 }
 
@@ -154,6 +154,61 @@ class ProfilePage extends StatelessWidget {
           Padding(padding: EdgeInsets.all(16), child: Row(children: [CircleAvatar(radius: 40, child: Text('👳', style: TextStyle(fontSize: 30))), SizedBox(width: 16), Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [Text('King of uk', style: TextStyle(color: Colors.black, fontSize: 22, fontWeight: FontWeight.bold)), Text('@king.of.uk15', style: TextStyle(color: Colors.grey)), SizedBox(height: 8), Row(children: [Text('197 Following  ', style: TextStyle(color: Colors.black)), Text('104 Followers  ', style: TextStyle(color: Colors.black)), Text('91 Likes', style: TextStyle(color: Colors.black))])]))])),
           Expanded(child: GridView.count(crossAxisCount: 3, children: List.generate(6, (i) => Container(color: [Colors.purple, Colors.teal, Colors.orange, Colors.pink, Colors.blue, Colors.green][i], child: Center(child: Text('Video ${i + 1}', style: TextStyle(color: Colors.white))))))),
         ],
+      ),
+    );
+  }
+}
+// LOGIN PAGE - A wala
+class LoginPage extends StatefulWidget {
+  @override
+  _LoginPageState createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
+  final _phoneController = TextEditingController();
+  bool _isLogin = true;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Padding(
+        padding: EdgeInsets.all(24),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('ViewMint', style: TextStyle(fontSize: 42, fontWeight: FontWeight.bold, color: Colors.white)),
+            Text('TikTok jaisa apna app', style: TextStyle(color: Colors.grey, fontSize: 16)),
+            SizedBox(height: 40),
+            // Login / SignUp Switch
+            Row(children: [
+              Expanded(child: GestureDetector(onTap: () => setState(() => _isLogin = true), child: Container(padding: EdgeInsets.all(12), decoration: BoxDecoration(color: _isLogin ? Colors.pink : Colors.grey[900], borderRadius: BorderRadius.circular(10)), child: Center(child: Text('Login', style: TextStyle(fontWeight: FontWeight.bold)))))),
+              SizedBox(width: 10),
+              Expanded(child: GestureDetector(onTap: () => setState(() => _isLogin = false), child: Container(padding: EdgeInsets.all(12), decoration: BoxDecoration(color: !_isLogin ? Colors.pink : Colors.grey[900], borderRadius: BorderRadius.circular(10)), child: Center(child: Text('Sign Up', style: TextStyle(fontWeight: FontWeight.bold)))))),
+            ]),
+            SizedBox(height: 20),
+            TextField(controller: _phoneController, keyboardType: TextInputType.phone, style: TextStyle(color: Colors.white), decoration: InputDecoration(hintText: 'Phone Number - 050 123 4567', hintStyle: TextStyle(color: Colors.grey), filled: true, fillColor: Colors.grey[900], border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none))),
+            SizedBox(height: 12),
+            TextField(obscureText: true, style: TextStyle(color: Colors.white), decoration: InputDecoration(hintText: 'Password', hintStyle: TextStyle(color: Colors.grey), filled: true, fillColor: Colors.grey[900], border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none))),
+            SizedBox(height: 20),
+            // Main Button
+            SizedBox(width: double.infinity, height: 50, child: ElevatedButton(
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.pink, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
+              onPressed: () {
+                Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => MainScreen()));
+              },
+              child: Text(_isLogin ? 'LOGIN' : 'CREATE ACCOUNT', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            )),
+            SizedBox(height: 20),
+            Text('OR', style: TextStyle(color: Colors.grey)),
+            SizedBox(height: 20),
+            SizedBox(width: double.infinity, height: 50, child: ElevatedButton.icon(icon: Icon(Icons.g_mobiledata, size: 28), label: Text('Continue with Google'), style: ElevatedButton.styleFrom(backgroundColor: Colors.white, foregroundColor: Colors.black), onPressed: () {
+              Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => MainScreen()));
+            })),
+            SizedBox(height: 12),
+            Text(_isLogin ? 'Naya ho? Sign Up dabao' : 'Pehle se account hai? Login dabao', style: TextStyle(color: Colors.grey)),
+          ],
+        ),
       ),
     );
   }
