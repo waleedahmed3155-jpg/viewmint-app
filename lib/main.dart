@@ -193,4 +193,98 @@ class _VideoTileState extends State<VideoTile> {
       ])),
     ]);
   }
+
+// ===== CAMERA SCREEN - Filter + Add Sound =====
+class CameraScreen extends StatefulWidget {
+  @override
+  _CameraScreenState createState() => _CameraScreenState();
+}
+
+class _CameraScreenState extends State<CameraScreen> {
+  String selectedMode = 'PHOTO';
+  String selectedTime = '15s';
+  bool isRecording = false;
+  String selectedFilter = 'Normal';
+  List<String> filters = ['Normal', 'Beauty', 'Warm', 'Cool', 'Vintage', 'Black & White', 'Bright'];
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(children: [
+        Container(color: Colors.black87, child: Center(child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Icon(Icons.camera_alt, color: Colors.white24, size: 80),
+          Text('Camera Preview', style: TextStyle(color: Colors.white24)),
+          if (selectedFilter != 'Normal') Container(margin: EdgeInsets.only(top: 10), padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4), decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(20)), child: Text('Filter: $selectedFilter', style: TextStyle(color: Colors.white))),
+        ]))),
+        Positioned(top: 35, left: 16, right: 16, child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          IconButton(icon: Icon(Icons.close, color: Colors.white, size: 30), onPressed: () => Navigator.pop(context)),
+          GestureDetector(onTap: () => showSoundSheet(), child: Container(padding: EdgeInsets.symmetric(horizontal: 18, vertical: 8), decoration: BoxDecoration(color: Colors.white24, borderRadius: BorderRadius.circular(25)), child: Row(children: [Icon(Icons.music_note, color: Colors.white, size: 20), SizedBox(width: 6), Text('Add sound', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold))]))),
+          SizedBox(width: 30),
+        ])),
+        Positioned(right: 16, top: 110, child: Column(children: [
+          _sideIcon(Icons.cached, 'Flip', () {}),
+          _sideIcon(Icons.flash_off, 'Flash', () {}),
+          _sideIcon(Icons.timer, 'Timer', () => showTimerSheet()),
+          _sideIcon(Icons.grid_view, 'Filters', () => showFilterSheet()),
+          _sideIcon(Icons.crop_free, 'Ratio', () {}),
+          _sideIcon(Icons.face, 'Beauty', () => showFilterSheet()),
+          Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 30),
+        ])),
+        Positioned(left: 0, right: 0, bottom: 20, child: Column(children: [
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            _timeBtn('10m'), SizedBox(width: 20),
+            _timeBtn('60s'), SizedBox(width: 20),
+            _timeBtn('15s'), SizedBox(width: 20),
+            _modeBtn('PHOTO'), SizedBox(width: 20),
+            _modeBtn('TEXT'),
+          ]),
+          SizedBox(height: 15),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            CircleAvatar(radius: 28, backgroundImage: NetworkImage('https://picsum.photos/100')),
+            SizedBox(width: 20),
+            GestureDetector(onTap: () => setState(() => isRecording = !isRecording), child: Container(width: 85, height: 85, decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.white, width: 4), color: isRecording ? Colors.red : Colors.white))),
+            SizedBox(width: 20),
+            CircleAvatar(radius: 28, backgroundImage: NetworkImage('https://picsum.photos/101')),
+          ]),
+          SizedBox(height: 15),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Text('LIVE', style: TextStyle(color: Colors.white70, fontSize: 16)),
+            SizedBox(width: 25),
+            Text('CAMERA', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            SizedBox(width: 25),
+            Text('CREATE', style: TextStyle(color: Colors.white70, fontSize: 16)),
+          ]),
+        ])),
+      ]),
+    );
+  }
+
+  Widget _sideIcon(IconData icon, String label, VoidCallback onTap) => GestureDetector(onTap: onTap, child: Padding(padding: EdgeInsets.only(bottom: 18), child: Column(children: [Icon(icon, color: Colors.white, size: 30), Text(label, style: TextStyle(color: Colors.white, fontSize: 10))])));
+
+  Widget _timeBtn(String t) => GestureDetector(onTap: () => setState(() => selectedTime = t), child: Text(t, style: TextStyle(color: selectedTime == t ? Colors.white : Colors.white54, fontSize: 17, fontWeight: selectedTime == t ? FontWeight.bold : FontWeight.normal)));
+
+  Widget _modeBtn(String m) => GestureDetector(onTap: () => setState(() => selectedMode = m), child: Container(padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4), decoration: BoxDecoration(color: selectedMode == m ? Colors.white : Colors.transparent, borderRadius: BorderRadius.circular(20)), child: Text(m, style: TextStyle(color: selectedMode == m ? Colors.black : Colors.white, fontWeight: FontWeight.bold))));
+
+  void showSoundSheet() {
+    showModalBottomSheet(context: context, backgroundColor: Colors.white, builder: (c) => Container(padding: EdgeInsets.all(16), height: 300, child: Column(children: [
+      Text('Add Sound', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+      ListTile(leading: Icon(Icons.music_note, color: Colors.red), title: Text('Trending Song - EGO'), trailing: Icon(Icons.play_arrow)),
+      ListTile(leading: Icon(Icons.music_note, color: Colors.blue), title: Text('Dubai Vibes'), trailing: Icon(Icons.play_arrow)),
+      ListTile(leading: Icon(Icons.music_note, color: Colors.green), title: Text('Punjabi Beat'), trailing: Icon(Icons.play_arrow)),
+      ListTile(leading: Icon(Icons.music_note, color: Colors.purple), title: Text('Slow + Reverb'), trailing: Icon(Icons.play_arrow)),
+    ])));
+  }
+
+  void showTimerSheet() {
+    showModalBottomSheet(context: context, backgroundColor: Colors.white, builder: (c) => Container(padding: EdgeInsets.all(20), child: Column(mainAxisSize: MainAxisSize.min, children: [Text('Timer', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)), ListTile(title: Text('3s Timer')), ListTile(title: Text('10s Timer')), ListTile(title: Text('Off'))]))));
+  }
+
+  void showFilterSheet() {
+    showModalBottomSheet(context: context, backgroundColor: Colors.black, builder: (c) => Container(padding: EdgeInsets.all(16), height: 200, child: Column(children: [
+      Text('Filters', style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+      SizedBox(height: 10),
+      SingleChildScrollView(scrollDirection: Axis.horizontal, child: Row(children: filters.map((f) => GestureDetector(onTap: () { setState(() => selectedFilter = f); Navigator.pop(context); }, child: Container(margin: EdgeInsets.only(right: 10), padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10), decoration: BoxDecoration(color: selectedFilter == f ? Colors.red : Colors.white24, borderRadius: BorderRadius.circular(20)), child: Text(f, style: TextStyle(color: Colors.white))))).toList())),
+    ])));
+  }
 }
