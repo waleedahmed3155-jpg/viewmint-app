@@ -11,7 +11,6 @@ class ViewMintApp extends StatefulWidget {
 class _ViewMintAppState extends State<ViewMintApp> {
   int coins = 1250;
   int selectedIndex = 0;
-  GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   List<Map<String, dynamic>> videos = [
     {'url': 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', 'user': 'Your friend', 'caption': 'EGO 💀🔥', 'hashtag': '#CapCut foryou❤️❤️', 'likes': '28', 'comments': '21', 'saves': '2', 'shares': '30'},
@@ -23,32 +22,32 @@ class _ViewMintAppState extends State<ViewMintApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        key: _scaffoldKey,
-        backgroundColor: Colors.black,
-        extendBody: true,
-        endDrawer: profileMenu(),
-        body: selectedIndex == 0 ? tiktokHome() : selectedIndex == 1 ? friendsPage() : selectedIndex == 3 ? inboxPage() : profilePage(),
-        bottomNavigationBar: BottomNavigationBar(
-          backgroundColor: Colors.black,
-          selectedItemColor: Colors.white,
-          unselectedItemColor: Colors.grey,
-          type: BottomNavigationBarType.fixed,
-          currentIndex: selectedIndex,
-          onTap: (i) { if (i == 2) return; setState(() => selectedIndex = i); },
-          items: [
-            BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-            BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Friends'),
-            BottomNavigationBarItem(icon: Container(padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)), child: Icon(Icons.add, color: Colors.black)), label: ''),
-            BottomNavigationBarItem(icon: Icon(Icons.chat_bubble), label: 'Inbox'),
-            BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
-          ],
+      home: Builder(
+        builder: (ctx) => Scaffold(
+          backgroundColor: selectedIndex == 4 ? Colors.white : Colors.black,
+          extendBody: true,
+          endDrawer: profileMenu(),
+          body: selectedIndex == 0 ? tiktokHome() : selectedIndex == 1 ? friendsPage() : selectedIndex == 3 ? inboxPage() : selectedIndex == 4 ? profilePage(ctx) : friendsPage(),
+          bottomNavigationBar: BottomNavigationBar(
+            backgroundColor: Colors.black,
+            selectedItemColor: Colors.white,
+            unselectedItemColor: Colors.grey,
+            type: BottomNavigationBarType.fixed,
+            currentIndex: selectedIndex,
+            onTap: (i) { if (i == 2) return; setState(() => selectedIndex = i); },
+            items: [
+              BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+              BottomNavigationBarItem(icon: Icon(Icons.people), label: 'Friends'),
+              BottomNavigationBarItem(icon: Container(padding: EdgeInsets.symmetric(horizontal: 10, vertical: 2), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(8)), child: Icon(Icons.add, color: Colors.black)), label: ''),
+              BottomNavigationBarItem(icon: Icon(Icons.chat_bubble), label: 'Inbox'),
+              BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
+            ],
+          ),
         ),
       ),
     );
   }
 
-  // ===== HOME - TikTok Feed =====
   Widget tiktokHome() {
     return Stack(children: [
       PageView.builder(
@@ -76,66 +75,50 @@ class _ViewMintAppState extends State<ViewMintApp> {
   Widget friendsPage() => Center(child: Text('Friends', style: TextStyle(color: Colors.white, fontSize: 24)));
   Widget inboxPage() => Center(child: Text('Inbox', style: TextStyle(color: Colors.white, fontSize: 24)));
 
-  // ===== PROFILE - Tumhare screenshot jaisa =====
-  Widget profilePage() {
-    return Scaffold(
-      backgroundColor: Colors.white,
-      body: SingleChildScrollView(
-        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          // Top icons
-          Padding(padding: EdgeInsets.only(top: 35, left: 12, right: 12), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
-            Icon(Icons.edit, size: 26),
-            Row(children: [
-              Stack(children: [CircleAvatar(radius: 16, backgroundImage: NetworkImage('https://picsum.photos/100')), Positioned(right: 0, bottom: 0, child: CircleAvatar(radius: 8, backgroundColor: Colors.red, child: Text('52', style: TextStyle(fontSize: 7, color: Colors.white))))]),
-              SizedBox(width: 12), Icon(Icons.person_add, size: 28),
-              SizedBox(width: 12),
-              IconButton(icon: Icon(Icons.menu, size: 28), onPressed: () => _scaffoldKey.currentState!.openEndDrawer()),
-            ]),
+  Widget profilePage(BuildContext ctx) {
+    return SingleChildScrollView(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Padding(padding: EdgeInsets.only(top: 35, left: 12, right: 12), child: Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+          Icon(Icons.edit, size: 26),
+          Row(children: [
+            Stack(children: [CircleAvatar(radius: 16, backgroundImage: NetworkImage('https://picsum.photos/100')), Positioned(right: 0, bottom: 0, child: CircleAvatar(radius: 8, backgroundColor: Colors.red, child: Text('52', style: TextStyle(fontSize: 7, color: Colors.white))))]),
+            SizedBox(width: 12), Icon(Icons.person_add, size: 28),
+            SizedBox(width: 12),
+            IconButton(icon: Icon(Icons.menu, size: 28), onPressed: () => Scaffold.of(ctx).openEndDrawer()),
+          ]),
+        ])),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Row(children: [Text('King of uk', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)), SizedBox(width: 6), Container(padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2), decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(12)), child: Text('9+', style: TextStyle(color: Colors.white, fontSize: 12)))]),
+            Text('@king.of.uk15', style: TextStyle(color: Colors.grey, fontSize: 15)),
+            SizedBox(height: 12),
+            Row(children: [_stat('197', 'Following'), SizedBox(width: 20), _stat('104', 'Followers'), SizedBox(width: 20), _stat('91', 'Likes')]),
           ])),
-          // Name + Profile Pic
-          Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Row(crossAxisAlignment: CrossAxisAlignment.start, children: [
-            Expanded(child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Row(children: [Text('King of uk', style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold)), SizedBox(width: 6), Container(padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2), decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.circular(12)), child: Text('9+', style: TextStyle(color: Colors.white, fontSize: 12)))]),
-              Text('@king.of.uk15', style: TextStyle(color: Colors.grey, fontSize: 15)),
-              SizedBox(height: 12),
-              Row(children: [
-                _stat('197', 'Following'), SizedBox(width: 20),
-                _stat('104', 'Followers'), SizedBox(width: 20),
-                _stat('91', 'Likes'),
-              ]),
-            ])),
-            Stack(children: [
-              Container(width: 95, height: 95, child: Stack(children: [
-                CircleAvatar(radius: 45, backgroundImage: NetworkImage('https://picsum.photos/200')),
-                Positioned(top: 0, right: 0, child: Container(padding: EdgeInsets.symmetric(horizontal: 8, vertical: 2), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(10), boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 4)]), child: Text('On your mind...', style: TextStyle(fontSize: 10)))),
-              ])),
-              Positioned(bottom: 0, right: 0, child: CircleAvatar(radius: 14, backgroundColor: Colors.blue, child: Icon(Icons.add, color: Colors.white, size: 18))),
-            ]),
-          ])),
-          SizedBox(height: 12),
-          // Bio
-          Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Container(padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(20)), child: Row(children: [Text('+ Add bio', style: TextStyle(fontWeight: FontWeight.bold)), Text('  ·  ', style: TextStyle(color: Colors.grey)), Icon(Icons.favorite, color: Colors.red, size: 16), Text(' My hobbies are...', style: TextStyle(color: Colors.grey))]))),
-          SizedBox(height: 10),
-          Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Row(children: [Icon(Icons.star, color: Colors.blue, size: 18), SizedBox(width: 6), Expanded(child: Text('Create Story Highlights for your profile', style: TextStyle(fontWeight: FontWeight.bold))), Icon(Icons.close)])),
-          SizedBox(height: 12),
-          // Tabs
-          Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [Icon(Icons.grid_view, size: 28), Icon(Icons.lock_outline, size: 28), Icon(Icons.repeat, size: 28), Icon(Icons.bookmark_border, size: 28), Icon(Icons.favorite_border, size: 28)]),
-          SizedBox(height: 8),
-          // Video Grid
-          GridView.count(
-            shrinkWrap: true, physics: NeverScrollableScrollPhysics(), crossAxisCount: 3, crossAxisSpacing: 1, mainAxisSpacing: 1,
-            children: [
-              _videoThumb('https://picsum.photos/300/400?1', 'Drafts: 1'),
-              _videoThumb('https://picsum.photos/300/400?2', '121'),
-              _videoThumb('https://picsum.photos/300/400?3', '190'),
-              _videoThumb('https://picsum.photos/300/400?4', '698'),
-              _videoThumb('https://picsum.photos/300/400?5', '247'),
-              _videoThumb('https://picsum.photos/300/400?6', '153'),
-            ],
-          ),
-          SizedBox(height: 80),
-        ]),
-      ),
+          Stack(children: [
+            CircleAvatar(radius: 45, backgroundImage: NetworkImage('https://picsum.photos/200')),
+            Positioned(bottom: 0, right: 0, child: CircleAvatar(radius: 14, backgroundColor: Colors.blue, child: Icon(Icons.add, color: Colors.white, size: 18))),
+          ]),
+        ])),
+        SizedBox(height: 12),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Container(padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8), decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(20)), child: Row(children: [Text('+ Add bio', style: TextStyle(fontWeight: FontWeight.bold)), Text('  ·  ', style: TextStyle(color: Colors.grey)), Icon(Icons.favorite, color: Colors.red, size: 16), Text(' My hobbies are...', style: TextStyle(color: Colors.grey))]))),
+        SizedBox(height: 10),
+        Padding(padding: EdgeInsets.symmetric(horizontal: 16), child: Row(children: [Icon(Icons.star, color: Colors.blue, size: 18), SizedBox(width: 6), Expanded(child: Text('Create Story Highlights for your profile', style: TextStyle(fontWeight: FontWeight.bold))), Icon(Icons.close)])),
+        SizedBox(height: 12),
+        Row(mainAxisAlignment: MainAxisAlignment.spaceAround, children: [Icon(Icons.grid_view, size: 28), Icon(Icons.lock_outline, size: 28), Icon(Icons.repeat, size: 28), Icon(Icons.bookmark_border, size: 28), Icon(Icons.favorite_border, size: 28)]),
+        SizedBox(height: 8),
+        GridView.count(
+          shrinkWrap: true, physics: NeverScrollableScrollPhysics(), crossAxisCount: 3, crossAxisSpacing: 1, mainAxisSpacing: 1,
+          children: [
+            _videoThumb('https://picsum.photos/300/400?1', 'Drafts: 1'),
+            _videoThumb('https://picsum.photos/300/400?2', '121'),
+            _videoThumb('https://picsum.photos/300/400?3', '190'),
+            _videoThumb('https://picsum.photos/300/400?4', '698'),
+            _videoThumb('https://picsum.photos/300/400?5', '247'),
+            _videoThumb('https://picsum.photos/300/400?6', '153'),
+          ],
+        ),
+        SizedBox(height: 80),
+      ]),
     );
   }
 
@@ -146,7 +129,6 @@ class _ViewMintAppState extends State<ViewMintApp> {
     Positioned(bottom: 4, left: 4, child: Row(children: [Icon(Icons.play_arrow, color: Colors.white, size: 16), Text(views, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold))])),
   ]);
 
-  // ===== SIDE MENU - 2nd screenshot jaisa =====
   Widget profileMenu() {
     return Drawer(
       backgroundColor: Colors.white,
@@ -169,3 +151,46 @@ class _ViewMintAppState extends State<ViewMintApp> {
   }
 
   Widget _menuItem(IconData icon, String title, String trailing) => ListTile(
+    leading: Icon(icon, size: 28), title: Text(title, style: TextStyle(fontSize: 19, fontWeight: FontWeight.bold)),
+    trailing: Row(mainAxisSize: MainAxisSize.min, children: [if (trailing.isNotEmpty) Text(trailing, style: TextStyle(color: Colors.amber, fontWeight: FontWeight.bold)), Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey)]),
+    onTap: () {},
+  );
+}
+
+class VideoTile extends StatefulWidget {
+  final String url, user, caption, hashtag, likes, comments, saves, shares;
+  final VoidCallback onLike;
+  VideoTile({required this.url, required this.user, required this.caption, required this.hashtag, required this.likes, required this.comments, required this.saves, required this.shares, required this.onLike});
+  @override
+  _VideoTileState createState() => _VideoTileState();
+}
+
+class _VideoTileState extends State<VideoTile> {
+  late VideoPlayerController _c;
+  bool liked = false;
+  @override
+  void initState() { super.initState(); _c = VideoPlayerController.networkUrl(Uri.parse(widget.url))..initialize().then((_) { setState(() {}); _c.play(); _c.setLooping(true); }); }
+  @override
+  void dispose() { _c.dispose(); super.dispose(); }
+  @override
+  Widget build(BuildContext context) {
+    return Stack(children: [
+      Center(child: _c.value.isInitialized ? SizedBox.expand(child: FittedBox(fit: BoxFit.cover, child: SizedBox(width: _c.value.size.width, height: _c.value.size.height, child: VideoPlayer(_c)))) : CircularProgressIndicator(color: Colors.white)),
+      Positioned(right: 12, bottom: 110, child: Column(children: [
+        Stack(children: [CircleAvatar(radius: 24, backgroundImage: NetworkImage('https://picsum.photos/100')), Positioned(bottom: 0, right: 0, child: CircleAvatar(radius: 10, backgroundColor: Colors.red, child: Icon(Icons.add, size: 14, color: Colors.white)))]),
+        SizedBox(height: 18),
+        IconButton(icon: Icon(Icons.favorite, color: liked ? Colors.red : Colors.white, size: 34), onPressed: () { if (!liked) { setState(() => liked = true); widget.onLike(); } }),
+        Text(widget.likes, style: TextStyle(color: Colors.white)),
+        SizedBox(height: 12), Icon(Icons.chat_bubble, color: Colors.white, size: 32), Text(widget.comments, style: TextStyle(color: Colors.white)),
+        SizedBox(height: 12), Icon(Icons.bookmark, color: Colors.white, size: 32), Text(widget.saves, style: TextStyle(color: Colors.white)),
+        SizedBox(height: 12), Icon(Icons.share, color: Colors.white, size: 32), Text(widget.shares, style: TextStyle(color: Colors.white)),
+        SizedBox(height: 12), CircleAvatar(radius: 22, backgroundImage: NetworkImage('https://picsum.photos/101')),
+      ])),
+      Positioned(left: 12, bottom: 15, right: 90, child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+        Container(padding: EdgeInsets.symmetric(horizontal: 8, vertical: 3), decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(6)), child: Text(widget.user, style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold))),
+        SizedBox(height: 6), Text(widget.caption, style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        Text(widget.hashtag, style: TextStyle(color: Colors.white, fontSize: 15)),
+      ])),
+    ]);
+  }
+}
